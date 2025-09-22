@@ -38,7 +38,7 @@ on:
 env:
   PROJECT_ID: 'devops-learning-hub' # TODO: update to your Google Cloud project ID
   REGION: 'us-east1' # TODO: update to your region
-  SERVICE: 'my-service-fast-api-demo' # TODO: update to your service name
+  SERVICE: 'apps' # TODO: update to your service name
   WORKLOAD_IDENTITY_PROVIDER: 'projects/579046125613/locations/global/workloadIdentityPools/github-pool/providers/github-provider' # TODO: update to your workload identity provider
   # https://iam.googleapis.com/projects/579046125613/locations/global/workloadIdentityPools/github-pool/providers/github-provider
 
