@@ -34,14 +34,12 @@ jobs:
       - name: Install deps
         run: |
           python -m pip install -U pip
-          # Si tus dependencias de test ya están en requirements.txt, con esta línea basta:
           pip install -r requirements.txt
-          # Por si faltaran en requirements.txt:
-          pip install pytest pytest-cov httpx
+          # Si faltara algo en requirements.txt, descomenta:
+          # pip install pytest pytest-cov httpx
 
       - name: Run tests with coverage (XML)
-        run: |
-          pytest --maxfail=1 -q --cov=app --cov-report xml:coverage.xml
+        run: pytest --maxfail=1 -q --cov=app --cov-report xml:coverage.xml
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
@@ -79,7 +77,7 @@ jobs:
         with:
           registry: "${{ env.REGION }}-docker.pkg.dev"
           username: "oauth2accesstoken"
-          password: "${{ steps.auth.outputs.auth_token }}"
+          password: "${{ steps.auth.outputs.access_token }}"  # usar access_token
 
       - name: Build & Push image
         env:
@@ -96,14 +94,10 @@ jobs:
           service: ${{ env.SERVICE }}
           region:  ${{ env.REGION }}
           image:   ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REPO }}/${{ env.SERVICE }}:${{ github.sha }}
-          # Si necesitas variables de entorno en Cloud Run, descomenta:
-          # env_vars: |
-          #   SOME_KEY=SOME_VALUE
-          #   OTHER_KEY=OTHER_VALUE
 
       - name: Show deployed URL
         env:
-          CR_URL: ${{ steps.deploy.outputs.url }}
-        run: |
-          echo "Cloud Run URL: ${CR_URL}"
+         CR_URL: ${{ steps.deploy.outputs.url }}
+         run: |
+            echo "Cloud Run URL: ${CR_URL}"
 
