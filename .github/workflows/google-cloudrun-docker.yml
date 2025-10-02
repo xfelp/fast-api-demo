@@ -39,6 +39,8 @@ jobs:
           # pip install pytest pytest-cov httpx
 
       - name: Run tests with coverage (XML)
+        env:
+          PYTHONPATH: .
         run: pytest --maxfail=1 -q --cov=app --cov-report xml:coverage.xml
 
       - name: Upload coverage artifact
@@ -68,6 +70,7 @@ jobs:
         with:
           workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: github-deployer@${{ env.PROJECT_ID }}.iam.gserviceaccount.com
+          token_format: 'access_token'   # asegura que exponga steps.auth.outputs.access_token
 
       - name: Set gcloud project
         run: gcloud config set project "${{ env.PROJECT_ID }}"
@@ -77,7 +80,7 @@ jobs:
         with:
           registry: "${{ env.REGION }}-docker.pkg.dev"
           username: "oauth2accesstoken"
-          password: "${{ steps.auth.outputs.access_token }}"  # token del paso auth
+          password: "${{ steps.auth.outputs.access_token }}"
 
       - name: Build & Push image
         env:
@@ -94,6 +97,10 @@ jobs:
           service: ${{ env.SERVICE }}
           region:  ${{ env.REGION }}
           image:   ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REPO }}/${{ env.SERVICE }}:${{ github.sha }}
+          # Si necesitas variables de entorno en el servicio, descomenta:
+          # env_vars: |
+          #   FOO=bar
+          #   OTHER=value
 
       - name: Show deployed URL
         env:
